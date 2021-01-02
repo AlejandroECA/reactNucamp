@@ -21,11 +21,20 @@ class Main extends Component {
             partners: PARTNERS,
             promotions: PROMOTIONS
         }
-    }
+    };
 
-
+   
 
     render() {
+
+        const CampsiteWithId = ({match}) => {
+            return (
+                <CampsiteInfo 
+                    campsite={this.state.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
+                    comments={this.state.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)}
+                />
+            );
+        }; 
 
         const HomePage =() =>{
             return (
@@ -44,6 +53,7 @@ class Main extends Component {
                     <Route path='/home' component={HomePage} />
                     <Route exact path='/directory' render={()=> <Directory campsites={this.state.campsites} />}/>
                     <Route exact path='/contactus' component={Contact} />
+                    <Route path='/directory/:campsiteId' component={CampsiteWithId} />
                     <Redirect to='/home' />
                 </Switch>
                 <Footer />
