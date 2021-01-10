@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Label,Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalBody ,ModalHeader} from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { LocalForm, Control, Errors } from 'react-redux-form';
 
 function RenderSelectedCampsite({campsite}){
     return (
@@ -13,8 +14,106 @@ function RenderSelectedCampsite({campsite}){
                 </CardBody>
             </Card>
         </div>
-    )
+    ) 
 }
+
+
+const required = val => val && val.length;
+const maxLength = len => val => !val || (val.length <= len);
+const minLength = len => val => val && (val.length >= len);
+
+class CommentForm extends React.Component{
+
+    constructor(props){
+        super(props);
+
+
+        this.state = {
+            openModalComment: false
+        };
+    }
+
+    toggleModal = () =>{
+        this.setState({
+            openModalComment: !this.state.openModalComment
+        })
+    }
+
+    SubmitComment(values){
+        alert('Your Comment: '+ JSON.stringify(values));
+    }
+
+
+    render(){
+        return(
+
+            <>
+            <Button onClick={this.toggleModal} className="fa fa-pencil fa-lg p-3" outline color='secondary'>Submit Comment</Button>
+            
+
+            <Modal isOpen={this.state.openModalComment} toggle={this.toggleModal}>
+            <ModalHeader toggle={this.toggleModal}>Comment</ModalHeader>
+                <ModalBody>
+                    <div className="form-group">
+                        <LocalForm className='mt-3' onSubmit={values => this.SubmitComment(values)}> 
+                        <div className='mt-2' >
+
+                            <Label htmlFor='rating'>Rating</Label>
+                            
+                            <Control.select className="form-control mt-1" model='.rating' id='rating' name='rating'
+                            validators={{
+                                required
+                            }}>
+                                <option value='0' >0</option>
+                                <option value='1' >1</option>
+                                <option value='2' >2</option>
+                                <option value='3' >3</option>
+                                <option value='4' >4</option>
+                                <option value='5' >5</option>
+                            </Control.select>
+                        </div>
+
+                        <div className='mt-2'>
+
+                            <Label htmlFor='authorting'>Author Name</Label>
+                            
+                            <Control.text className="form-control mt-1" model=".author" id='author' name='author'  
+                            validators={{
+                                required,
+                                minLength: minLength(2),
+                                maxLength: maxLength(15)
+                            }}/>
+
+                            <Errors
+                                className="text-danger"
+                                model=".author"
+                                show="touched"
+                                component="div"
+                                messages={{
+                                    required: 'Required',
+                                    minLength: 'Must be at least 2 characters',
+                                    maxLength: 'Must be 15 characters or less'
+                                }}
+                            />
+
+                        </div>
+
+                        <div className='mt-2'>
+                            <Label htmlFor='text'>Comment</Label>
+
+                            <Control.textarea className="form-control mt-1" model='.text' rows='6' id='text' name='text' /> 
+                        </div>
+                        <Button className='mt-2' type='submit' value='submit' color='primary'>Submit</Button>
+                        </LocalForm>
+                    </div>
+                </ModalBody>
+            </Modal>
+            </>
+        )
+    }  
+}
+
+
 
 function RenderComments({comments}){
     if (comments){
@@ -25,10 +124,11 @@ function RenderComments({comments}){
                 comments.map( x => {
                     return (
                         <div key={x.id}>
-                        <p>{x.text} <br></br> -- {x.author},  {new Intl.DateTimeFormat('en-Us',{ year:'numeric',month:'short',day:'2-digit'}).format(new Date(Date.parse(x.date)))}</p>
+                            <p>{x.text} <br></br> -- {x.author},  {new Intl.DateTimeFormat('en-Us',{ year:'numeric',month:'short',day:'2-digit'}).format(new Date(Date.parse(x.date)))}</p>
                         </div>)
                 })
                 }
+                <CommentForm />
             </div>
         )
     }
