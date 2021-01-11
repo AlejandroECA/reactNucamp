@@ -3,6 +3,8 @@ import { Label,Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Bu
 import { Link } from 'react-router-dom';
 import { LocalForm, Control, Errors } from 'react-redux-form';
 
+import { Loading } from './LoadingComponent';
+
 function RenderSelectedCampsite({campsite}){
     return (
         <div className='col-md-5 m-1'>
@@ -40,7 +42,8 @@ class CommentForm extends React.Component{
     }
 
     SubmitComment(values){
-        alert('Your Comment: '+ JSON.stringify(values));
+        this.toggleModal()
+        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text)
     }
 
 
@@ -115,7 +118,7 @@ class CommentForm extends React.Component{
 
 
 
-function RenderComments({comments}){
+function RenderComments({comments, addComment, campsiteId}){
     if (comments){
         return(
             <div className='col-md-5 m-1' >
@@ -128,7 +131,7 @@ function RenderComments({comments}){
                         </div>)
                 })
                 }
-                <CommentForm />
+                <CommentForm campsiteId={campsiteId} addComment={addComment}/>
             </div>
         )
     }
@@ -136,31 +139,55 @@ function RenderComments({comments}){
 }
 
 function CampsiteInfo(props){
-if(props.campsite){
-    return(
-        <div className='container'>
-            <div className="row">
-                <div className="col">
-                    <Breadcrumb>
-                        <BreadcrumbItem><Link to="/directory">Directory</Link></BreadcrumbItem>
-                        <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
-                    </Breadcrumb>
-                    <h2>{props.campsite.name}</h2>
-                    <hr />
+    if (props.isLoading) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading />
                 </div>
-                </div>
-            <div className='row' >
-                <RenderSelectedCampsite campsite={props.campsite} />
-                <RenderComments comments={props.comments} />
             </div>
-        </div>
-    )
-}
-else{
-    return(
-        <div></div>
-    )
-}
+        );
+    }
+    if (props.errMess) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <div className="col">
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    if(props.campsite){
+        return(
+            <div className='container'>
+                <div className="row">
+                    <div className="col">
+                        <Breadcrumb>
+                            <BreadcrumbItem><Link to="/directory">Directory</Link></BreadcrumbItem>
+                            <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
+                        </Breadcrumb>
+                        <h2>{props.campsite.name}</h2>
+                        <hr />
+                    </div>
+                    </div>
+                <div className='row' >
+                    <RenderSelectedCampsite campsite={props.campsite} />
+                    <RenderComments 
+                        comments={props.comments} 
+                        addComment = {props.addComment}
+                        campsiteId = {props.campsite.id}
+                    />
+                </div>
+            </div>
+        )
+    }
+    else{
+        return(
+            <div></div>
+        )
+    }
 }   
     
 
