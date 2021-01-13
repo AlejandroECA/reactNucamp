@@ -5,11 +5,13 @@ import { LocalForm, Control, Errors } from 'react-redux-form';
 
 import { Loading } from './LoadingComponent';
 
+import { baseUrl } from '../shared/baseUrl';
+
 function RenderSelectedCampsite({campsite}){
     return (
         <div className='col-md-5 m-1'>
                 <Card>
-                <CardImg top src={campsite.image} alt={campsite.name}/>
+                <CardImg top src={baseUrl + campsite.image} alt={campsite.name} />
                 <CardBody>
                     {/* <CardTitle>{campsite.name}</CardTitle> */}
                     <CardText>{campsite.description}</CardText>
@@ -42,8 +44,8 @@ class CommentForm extends React.Component{
     }
 
     SubmitComment(values){
-        this.toggleModal()
-        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text)
+        this.toggleModal();
+        this.props.postComment(this.props.campsiteId, values.rating, values.author, values.text);
     }
 
 
@@ -118,7 +120,7 @@ class CommentForm extends React.Component{
 
 
 
-function RenderComments({comments, addComment, campsiteId}){
+function RenderComments({comments, postComment, campsiteId}){
     if (comments){
         return(
             <div className='col-md-5 m-1' >
@@ -131,7 +133,7 @@ function RenderComments({comments, addComment, campsiteId}){
                         </div>)
                 })
                 }
-                <CommentForm campsiteId={campsiteId} addComment={addComment}/>
+                <CommentForm campsiteId={campsiteId} postComment={postComment} />
             </div>
         )
     }
@@ -174,11 +176,11 @@ function CampsiteInfo(props){
                     </div>
                 <div className='row' >
                     <RenderSelectedCampsite campsite={props.campsite} />
-                    <RenderComments 
-                        comments={props.comments} 
-                        addComment = {props.addComment}
-                        campsiteId = {props.campsite.id}
-                    />
+                    <RenderComments
+                        comments={props.comments}
+                        postComment={props.postComment}
+                        campsiteId={props.campsite.id}
+                    /> 
                 </div>
             </div>
         )
