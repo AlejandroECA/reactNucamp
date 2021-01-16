@@ -1,4 +1,3 @@
-import { CAMPSITES } from '../shared/campsites';
 import * as ActionTypes from './ActionType'
 
 export const Campstites = (state = {
